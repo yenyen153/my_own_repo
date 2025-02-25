@@ -19,6 +19,27 @@ def fetch_content(link):
     content = content.split(end_point)
     return content[0]
 
+## 爬取作者
+def fetch_author(link):
+    res = requests.get(link)
+    soup = BeautifulSoup(res.text, "html.parser")
+    post_details = soup.select(".article-meta-value")
+    detail = []
+    for author in post_details:
+        detail.append(author.text)
+
+    posts_detail = {
+        'board_name':detail[1],
+        'title':detail[2],
+        'date':detail[-1],
+        'author_id_in_ptt':, # todo : seperate aurthor id and author name
+        'author_name_in_ptt':,
+        'link':, # todo : link will from fetch_posts's post_data['link']
+        'content':  # todo : content from fetch_content (upper function)
+    }
+
+    return detail
+
 
 def fetch_posts(board):
     res = session.get(PTT_URL.format(board))
@@ -45,6 +66,8 @@ def fetch_posts(board):
 
     return posts
 
+detail = fetch_author('https://www.ptt.cc/bbs/home-sale/M.1740472551.A.199.html')
+print(detail)
 
 # ff = fetch_posts("Gossiping")
 # print(ff[0])
