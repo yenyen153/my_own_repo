@@ -24,7 +24,7 @@ engine = create_engine(
 PttPostsTable.metadata.create_all(engine)
 BoardTable.metadata.create_all(engine)
 AuthorTable.metadata.create_all(engine)
-CrawlerLog.metadata.create_all(engine)
+# CrawlerLog.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
 
@@ -37,9 +37,9 @@ for board in PTT_BOARDS:
 
     for post in  posts:
         try:
-            CheckModel(**post)
-            DataCheck(Session,**post)
-            DataIn(Session,**post)
+            PttPostModel(**post)
+            data_check(Session,**post)
+            data_in(Session,**post)
         except:
             pass
         ##先PASS 如果有要記錄再增加
