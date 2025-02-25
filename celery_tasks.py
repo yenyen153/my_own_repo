@@ -1,15 +1,7 @@
 from celery import Celery
 from celery.schedules import crontab
 from tools.crawler import run_crawler, fetch_posts
-# import logging
-#
-# logging.basicConfig(
-#     filename="crawler.log",
-#     level=logging.INFO,
-#     filemode='a',
-#     format="%(asctime)s [%(levelname)s] %(message)s",
-#     encoding='utf-8'
-# )
+
 
 app = Celery("task",
              broker="redis://localhost:6379/0",
