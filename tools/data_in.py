@@ -1,9 +1,10 @@
 from sqlalchemy.orm import sessionmaker
 from tools.pydantic_databases import *
+import re
 
 Session = sessionmaker(bind=engine)
 
-def DataCheck(**ptt_post):
+def DataCheck(Session,**ptt_post):
     with Session() as session:
         author = session.query(AuthorTable).filter_by(name=ptt_post['author_name']).first()
         board = session.query(BoardTable).filter_by(board=ptt_post['board_id']).first()
@@ -21,7 +22,7 @@ def DataCheck(**ptt_post):
         session.commit()
         session.close()
 
-def DataIn(**ptt_post):
+def DataIn(Session,**ptt_post):
     with Session() as session:
         post_link = session.query(PttPostsTable).filter_by(link=ptt_post['link']).first()
         author = session.query(AuthorTable).filter_by(name=ptt_post['author_name']).first()
@@ -39,6 +40,22 @@ def DataIn(**ptt_post):
 
         session.commit()
         session.close()
+
+def LogIn(Session,Crawlerlog):
+    with Session() as session:
+        with open(Crawlerlog, "r", encoding='utf-8') as log_file:
+            logs = log_file.readlines()
+            for log in logs:
+                match = re.match(r"([\d-]+ [\d:,]+) (.+)", log)
+
+                if match:
+                    time = match.group(1)
+                    message = match.group(2)
+                    time_log = {'time':time, 'message':message}
+                    session.add(CrawlerLog(**time_log))
+
+                session.commit()
+                session.close()
 
 # def CrawlerLogIn(crawler_log):
 #     with Session() as session:
