@@ -52,12 +52,11 @@ class AuthorTable(Base):
     posts = relationship("PttPostsTable", back_populates="author", foreign_keys=[PttPostsTable.author_name])
 
 
+class CrawlerLog(Base):
+    __tablename__ = "crawler_log"
+
+    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+    time = sa.Column(sa.Text)
+    message = sa.Column(sa.Text)
+
 Base.metadata.create_all(engine)
-
-
-
-# class CrawlerLog(Base):
-#     __tablename__ = "crawler_log"
-#
-#     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-#     times = sa.Column(sa.Text)
