@@ -3,9 +3,6 @@ import requests
 from unittest.mock import MagicMock
 from tools.crawler import fetch_posts
 
-
-
-
 MOCK_HTML = """
 <html>
     <body>

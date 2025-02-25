@@ -1,7 +1,7 @@
-from tools.data_in import DataCheck, DataIn
+from tools.data_in import *
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker,declarative_base
-from tools.pydantic_databases import PttPostsTable, AuthorTable, BoardTable, CheckModel
+from tools.pydantic_databases import PttPostsTable, AuthorTable, BoardTable, PttPostModel
 
 
 Base = declarative_base()
@@ -28,13 +28,13 @@ def test_data_insert():
 
     with Session() as session:
 
-        CheckModel(**test_post)
+        PttPostModel(**test_post)
 
-        DataCheck(Session,**test_post)
+        data_check(Session,**test_post)
 
-        DataIn(Session,**test_post)
+        data_in(Session,**test_post)
 
-        post = session.query(PttPostsTable).filter_by(link=test_post["link"]).first()
+        post = session.query(PttPostsTable).first()
         board = session.query(BoardTable).first()
         author = session.query(AuthorTable).first()
 
