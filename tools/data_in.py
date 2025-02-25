@@ -72,7 +72,7 @@ def LogIn(Session,Crawlerlog):
 #         'content': 'this is for stock teswt'
 #     }
 #
-#     DataCheck(**test_data)
+#     DataCheck(**test_data).
 #     DataIn(**test_data)
 
 
