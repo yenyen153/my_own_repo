@@ -5,12 +5,12 @@ import sqlalchemy as sa
 from sqlalchemy.orm import relationship,declarative_base
 
 
-class CheckModel(BaseModel):
-    board_id: str
+class PttPostModel(BaseModel): # todo: date指定格式年月日 檢查是否符合格式 如果有錯誤 程式不中斷產生例外 跳過錯誤寫在celery 錯誤讓celery抓
+    board_id: str  ##board_name
     title: str
     link: HttpUrl
     author_name: str
-    date: str
+    date: str  #更進階檢查格式
     content: str
 
 
@@ -46,17 +46,31 @@ class BoardTable(Base):
 class AuthorTable(Base):
     __tablename__ = "author"
 
-    name = sa.Column(sa.String(100), primary_key=True)
-    posts_url = sa.Column(sa.String(255))
-
+    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+    name = sa.Column(sa.String(100), unique=True, nullable=False)
+    #新增暱稱
+    # posts_url = sa.Column(sa.String(255)) # todo: delete
+    #
     posts = relationship("PttPostsTable", back_populates="author", foreign_keys=[PttPostsTable.author_name])
 
 
-class CrawlerLog(Base):
-    __tablename__ = "crawler_log"
-
-    id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-    time = sa.Column(sa.Text)
-    message = sa.Column(sa.Text)
 
 Base.metadata.create_all(engine)
+
+
+
+
+
+
+
+
+
+
+
+
+# class CrawlerLog(Base):
+#     __tablename__ = "crawler_log"
+#
+#     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
+#     time = sa.Column(sa.Text)
+#     message = sa.Column(sa.Text)
