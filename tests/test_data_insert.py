@@ -29,7 +29,7 @@ def test_data_insert():
 
     with Session() as session:
 
-        # PttPostModel(**test_post) # todo : 這個要修改格式
+        PttPostModel(**test_post) # todo : 這個要修改格式
 
         data_check(Session,**test_post)
 
