@@ -65,9 +65,9 @@ def fetch_posts(board):
 
     return posts
 
-post_detail = fetch_posts('Chiayi')
-
-print(post_detail[1])
+# post_detail = fetch_posts('Chiayi')
+#
+# print(post_detail[1])
 
 
 # ff = fetch_posts("Gossiping")

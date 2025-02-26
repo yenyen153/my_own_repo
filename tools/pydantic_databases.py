@@ -4,9 +4,14 @@ from sqlalchemy import create_engine, ForeignKey
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship,declarative_base
 import re
+from sqlalchemy.orm import sessionmaker
+
+
+from main import Session
+
 
 class PttPostModel(BaseModel):
-    board_name: str  ##board_name
+    board_name: str
     title: str
     link: HttpUrl
     author_ptt_id: str
@@ -19,7 +24,11 @@ class PttPostModel(BaseModel):
             raise ValueError('wrong date format')
         return value
 
-class PttPostsTableModel(BaseModel):
+# class AuthorTableModel(BaseModel): # todo : check the formate of table keys and content of key
+#
+#     author.id : int
+#     author.autho_ptt_id : str
+#     author.author_name : str
 
 
 Base = declarative_base()
