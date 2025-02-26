@@ -9,7 +9,7 @@ class PttPostModel(BaseModel):
     board_name: str  ##board_name
     title: str
     link: HttpUrl
-    author_id: str
+    author_ptt_id: str
     date: str
     content: str
     @field_validator('date')
@@ -18,6 +18,8 @@ class PttPostModel(BaseModel):
         if not re.search(r"\d{4}[/]\d{2}[/]\d{2}\s\d{2}[:]\d{2}[:]\d{2}", value):
             raise ValueError('wrong date format')
         return value
+
+class PttPostsTableModel(BaseModel):
 
 
 Base = declarative_base()
@@ -54,11 +56,9 @@ class AuthorTable(Base):
     __tablename__ = "author"
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-    author_id = sa.Column(sa.String(100), unique=True, nullable=False)
+    author_ptt_id = sa.Column(sa.String(100), unique=True, nullable=False)
     author_nickname = sa.Column(sa.String(100), nullable=False)
-    #新增暱稱
-    # posts_url = sa.Column(sa.String(255)) # todo: delete
-    #
+
     posts = relationship("PttPostsTable", back_populates="author", foreign_keys=[PttPostsTable.author_id])
 
 
