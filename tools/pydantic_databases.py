@@ -6,10 +6,10 @@ from sqlalchemy.orm import relationship,declarative_base
 import re
 
 class PttPostModel(BaseModel):
-    board_id: str  ##board_name
+    board_name: str  ##board_name
     title: str
     link: HttpUrl
-    author_name: str
+    author_id: str
     date: str
     content: str
     @field_validator('date')
