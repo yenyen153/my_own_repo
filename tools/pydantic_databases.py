@@ -15,9 +15,9 @@ class PttPostModel(BaseModel): # todo: date指定格式年月日 檢查是否符
 
 
 Base = declarative_base()
-engine = create_engine(
-    "mysql+pymysql://user:password@localhost/ptt_db"
-)
+# engine = create_engine(
+#     "mysql+pymysql://user:password@localhost/ptt_db"
+# )
 
 
 class PttPostsTable(Base):
@@ -25,14 +25,15 @@ class PttPostsTable(Base):
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
     board_id = sa.Column(sa.Integer, sa.ForeignKey("board.id"), nullable=False)
-    author_name = sa.Column(sa.String(100), sa.ForeignKey("author.name"), nullable=False)
+    author_id = sa.Column(sa.String(100), sa.ForeignKey("author.id"), nullable=False)
     title = sa.Column(sa.String(100), nullable=False)
     link = sa.Column(sa.String(255), unique=True, nullable=False)
     date = sa.Column(sa.String(20), nullable=False)
     content = sa.Column(sa.Text)
 
     board = relationship("BoardTable", back_populates="posts", foreign_keys=[board_id])
-    author = relationship("AuthorTable", back_populates="posts", foreign_keys=[author_name])
+    author = relationship("AuthorTable", back_populates="posts", foreign_keys=[author_id])
+
 
 class BoardTable(Base):
     __tablename__ = "board"
@@ -47,15 +48,16 @@ class AuthorTable(Base):
     __tablename__ = "author"
 
     id = sa.Column(sa.Integer, primary_key=True, autoincrement=True)
-    name = sa.Column(sa.String(100), unique=True, nullable=False)
+    author_id = sa.Column(sa.String(100), unique=True, nullable=False)
+    author_nickname = sa.Column(sa.String(100), nullable=False)
     #新增暱稱
     # posts_url = sa.Column(sa.String(255)) # todo: delete
     #
-    posts = relationship("PttPostsTable", back_populates="author", foreign_keys=[PttPostsTable.author_name])
+    posts = relationship("PttPostsTable", back_populates="author", foreign_keys=[PttPostsTable.author_id])
 
 
 
-Base.metadata.create_all(engine)
+# Base.metadata.create_all(engine)
 
 
 
