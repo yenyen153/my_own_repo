@@ -1,17 +1,23 @@
-from pydantic import BaseModel, HttpUrl, Field
+from pydantic import BaseModel, HttpUrl, Field, field_validator
 from datetime import datetime
 from sqlalchemy import create_engine, ForeignKey
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship,declarative_base
+import re
 
-
-class PttPostModel(BaseModel): # todo: date指定格式年月日 檢查是否符合格式 如果有錯誤 程式不中斷產生例外 跳過錯誤寫在celery 錯誤讓celery抓
+class PttPostModel(BaseModel):
     board_id: str  ##board_name
     title: str
     link: HttpUrl
     author_name: str
-    date: str  #更進階檢查格式
+    date: str
     content: str
+    @field_validator('date')
+    @classmethod
+    def validate_date(cls, value:str) -> str:
+        if not re.search(r"\d{4}[/]\d{2}[/]\d{2}\s\d{2}[:]\d{2}[:]\d{2}", value):
+            raise ValueError('wrong date format')
+        return value
 
 
 Base = declarative_base()
