@@ -13,6 +13,7 @@ BoardTable.metadata.create_all(engine)
 AuthorTable.metadata.create_all(engine)
 
 
+
 def test_data_insert():
 
     Session = sessionmaker(bind=engine)
@@ -29,7 +30,7 @@ def test_data_insert():
 
     with Session() as session:
 
-        PttPostModel(**test_post) # todo : 這個要修改格式
+        PttPostModel(**test_post)
 
         data_check(Session,**test_post)
 
@@ -38,6 +39,8 @@ def test_data_insert():
         post = session.query(PttPostsTable).first()
         board = session.query(BoardTable).first()
         author = session.query(AuthorTable).first()
+
+
 
         assert post.title == test_post["title"]
         assert post.board_id is not None
