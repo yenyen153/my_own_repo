@@ -31,7 +31,7 @@ def fetch_author(link):
     posts_detail = {
         'board_name':details_list[1],
         'title':details_list[2],
-        'author_id_':((details_list[0].split('('))[0]).rstrip(),
+        'author_ptt_id':((details_list[0].split('('))[0]).rstrip(),
         'author_nickname':((details_list[0].split('('))[1]).rstrip(')'),
     }
 
