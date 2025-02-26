@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-import datetime
+from datetime import datetime
 
 
 PTT_BOARDS = ["Gossiping", "Stock", "C_Chat", "Baseball", "NBA"]
@@ -19,26 +19,28 @@ def fetch_content(link):
     content = content.split(end_point)
     return content[0]
 
-## 爬取作者
+## 爬取作者名字與id/版面／標題
 def fetch_author(link):
     res = requests.get(link)
     soup = BeautifulSoup(res.text, "html.parser")
     post_details = soup.select(".article-meta-value")
-    detail = []
+    details_list = []
     for author in post_details:
-        detail.append(author.text)
+        details_list.append(author.text)
 
     posts_detail = {
-        'board_name':detail[1],
-        'title':detail[2],
-        'date':detail[-1],
-        'author_id_in_ptt':, # todo : seperate aurthor id and author name
-        'author_name_in_ptt':,
-        'link':, # todo : link will from fetch_posts's post_data['link']
-        'content':  # todo : content from fetch_content (upper function)
+        'board_name':details_list[1],
+        'title':details_list[2],
+        'author_id_':((details_list[0].split('('))[0]).rstrip(),
+        'author_nickname':((details_list[0].split('('))[1]).rstrip(')'),
     }
 
-    return detail
+    time_str = details_list[-1]
+    dt = datetime.strptime(time_str, "%a %b %d %H:%M:%S %Y")
+    formatted_time = dt.strftime("%Y/%m/%d %H:%M:%S")
+    posts_detail['date'] = formatted_time
+
+    return posts_detail
 
 
 def fetch_posts(board):
@@ -52,22 +54,20 @@ def fetch_posts(board):
         if not title_elem:
             continue
 
-        post_data = {
-            "board_id": board,
-            "title": title_elem.text,
-            "link": "https://www.ptt.cc" + title_elem["href"],
-            "author_name": article.select_one(".author").text,
-            "date": article.select_one(".date").text
-        }
-        post_data["content"] = fetch_content(post_data["link"])
 
-        posts.append(post_data)
+        post_link = f"https://www.ptt.cc{title_elem['href']}"
+        post_detail = fetch_author(post_link)
+        post_detail["content"] = fetch_content(post_link)
+        post_detail["link"] = post_link
+
+        posts.append(post_detail)
 
 
     return posts
 
-detail = fetch_author('https://www.ptt.cc/bbs/home-sale/M.1740472551.A.199.html')
-print(detail)
+post_detail = fetch_posts('Chiayi')
+print(post_detail[1])
+
 
 # ff = fetch_posts("Gossiping")
 # print(ff[0])
