@@ -2,39 +2,38 @@ from sqlalchemy.orm import sessionmaker
 from tools.pydantic_databases import *
 
 
-Session = sessionmaker(bind=engine)
+# Session = sessionmaker(bind=engine)
 
 ## name way change
 def data_check(Session,**ptt_post): # todo: change name to define style
     with Session() as session:
-        author = session.query(AuthorTable).filter_by(name=ptt_post['author_name']).first()
-        board = session.query(BoardTable).filter_by(board=ptt_post['board_id']).first()
+        author = session.query(AuthorTable).filter_by(author_id=ptt_post['author_id']).first()
+        board = session.query(BoardTable).filter_by(board=ptt_post['board_name']).first()
 
 
         if not author:
 
-            session.add(AuthorTable(**{'name':ptt_post['author_name'],
-                                        'posts_url':f"https://www.ptt.cc/bbs/{ptt_post['board_id']}/search?q=author%3A{ptt_post['author_name']}"}))
-
+            session.add(AuthorTable(**{'author_nickname':ptt_post['author_nickname'],
+                                    'author_id':ptt_post['author_id']}))
         if not board:
 
-            session.add(BoardTable(**{'board':ptt_post['board_id'],
-                                      'url': f"https://www.ptt.cc/bbs/{ptt_post['board_id']}/index.html" }))
+            session.add(BoardTable(**{'board':ptt_post['board_name'],
+                                      'url': f"https://www.ptt.cc/bbs/{ptt_post['board_name']}/index.html" }))
         session.commit()
         session.close()
 
 def data_in(Session,**ptt_post): # todo: change name to define style
     with Session() as session:
         post_link = session.query(PttPostsTable).filter_by(link=ptt_post['link']).first()
-        author = session.query(AuthorTable).filter_by(name=ptt_post['author_name']).first()
-        board = session.query(BoardTable).filter_by(board=ptt_post['board_id']).first()
+        author = session.query(AuthorTable).filter_by(author_id=ptt_post['author_id']).first()
+        board = session.query(BoardTable).filter_by(board=ptt_post['board_name']).first()
 
         if not post_link:
             new_ptt_post = {
                 "board_id":board.id,
                 "title":ptt_post['title'],
                 "link":ptt_post['link'],
-                "author_name":author.name,
+                "author_id":author.author_id,
                 "date":ptt_post['date'],
                 "content":ptt_post['content']}
             session.add(PttPostsTable(**new_ptt_post))
