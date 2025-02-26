@@ -7,14 +7,14 @@ from tools.pydantic_databases import *
 ## name way change
 def data_check(Session,**ptt_post): # todo: change name to define style
     with Session() as session:
-        author = session.query(AuthorTable).filter_by(author_id=ptt_post['author_id']).first()
+        author = session.query(AuthorTable).filter_by(author_ptt_id=ptt_post['author_ptt_id']).first()
         board = session.query(BoardTable).filter_by(board=ptt_post['board_name']).first()
 
 
         if not author:
 
             session.add(AuthorTable(**{'author_nickname':ptt_post['author_nickname'],
-                                    'author_id':ptt_post['author_id']}))
+                                    'author_ptt_id':ptt_post['author_ptt_id']}))
         if not board:
 
             session.add(BoardTable(**{'board':ptt_post['board_name'],
@@ -25,7 +25,7 @@ def data_check(Session,**ptt_post): # todo: change name to define style
 def data_in(Session,**ptt_post): # todo: change name to define style
     with Session() as session:
         post_link = session.query(PttPostsTable).filter_by(link=ptt_post['link']).first()
-        author = session.query(AuthorTable).filter_by(author_id=ptt_post['author_id']).first()
+        author = session.query(AuthorTable).filter_by(author_ptt_id=ptt_post['author_ptt_id']).first()
         board = session.query(BoardTable).filter_by(board=ptt_post['board_name']).first()
 
         if not post_link:
@@ -33,7 +33,7 @@ def data_in(Session,**ptt_post): # todo: change name to define style
                 "board_id":board.id,
                 "title":ptt_post['title'],
                 "link":ptt_post['link'],
-                "author_id":author.author_id,
+                "author_id":author.id,
                 "date":ptt_post['date'],
                 "content":ptt_post['content']}
             session.add(PttPostsTable(**new_ptt_post))
