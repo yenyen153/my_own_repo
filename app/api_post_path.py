@@ -1,26 +1,18 @@
-from fastapi import FastAPI, Depends, HTTPException, Query
+from fastapi import FastAPI, Depends, HTTPException, Query, APIRouter
 from app.models import *
 from app.schemas import *
 from sqlalchemy import create_engine, func, and_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, sessionmaker
 from datetime import datetime
+from app.databases import get_db
 
-app = FastAPI()
-
-engine = create_engine("mysql+pymysql://user:password@localhost/ptt_db")
-SessionLocal = sessionmaker(bind=engine)
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
+# app = FastAPI()
+router = APIRouter()
 
 # 取得前50篇文章
-@app.get("/api/posts", response_model=list[PostResponse])
+# @app.get("/api/posts", response_model=list[PostResponse])
+@router.get("/api/posts", response_model=list[PostResponse])
 def get_posts(db: Session = Depends(get_db)):
     # posts = db.query(PttPostsTable).all()
     posts = db.query(PttPostsTable).order_by(PttPostsTable.id.desc()).limit(50).all()
@@ -30,7 +22,8 @@ def get_posts(db: Session = Depends(get_db)):
 
 
 # 取得單一文章
-@app.get("/api/posts/{id}", response_model=PostResponse)
+# @app.get("/api/posts/{id}", response_model=PostResponse)
+@router.get("/api/posts/{id}", response_model=PostResponse)
 def get_post(id: int, db: Session = Depends(get_db)):
     post = db.query(PttPostsTable).filter(PttPostsTable.id == id).first()
     if post is None:
@@ -39,7 +32,8 @@ def get_post(id: int, db: Session = Depends(get_db)):
     return post
 
 # 自定義過濾 發文時間 版面名稱 作者id 作者名字
-@app.get("/api/statistics")
+# @app.get("/api/statistics")
+@router.get("/api/statistics")
 def get_statistics(
     post_date: str = Query(None, description="發文日期 (YYYY/MM/DD)"),
     board_name: str = Query(None, description="版面名稱"),
@@ -87,23 +81,36 @@ def get_statistics(
     return {"文章總篇數": total_posts}
 
 # 新增文章
-@app.post("/api/posts", response_model=PostResponse)
+# @app.post("/api/posts", response_model=PostResponse)
+@router.post("/api/posts", response_model=PostResponse)
 def create_post(post: PostCreate, db: Session = Depends(get_db)):
     board = db.query(BoardTable).filter(BoardTable.board == post.board_name).first()
     author = db.query(AuthorTable).filter(AuthorTable.author_ptt_id == post.author_ptt_id).first()
 
+    # if not author:
+    #     db.add(AuthorTable(**{'author_nickname': post.author_nickname,
+    #                           'author_ptt_id': post.author_ptt_id,}))
+    #     db.commit()
+    #     db.refresh(author)
     if not author:
-        db.add(AuthorTable(**{'author_nickname': post.author_nickname,
-                              'author_ptt_id': post.author_ptt_id,}))
+        author = AuthorTable(author_nickname=post.author_nickname, author_ptt_id=post.author_ptt_id)
+        db.add(author)
         db.commit()
+        db.refresh(author)
+
+    # if not board:
+    #     db.add(BoardTable(**{'board': post.board_name,
+    #                          'url': f"https://www.ptt.cc/bbs/{post.board_name}/index.html"}))
+    #     db.commit()
+    #     db.refresh(board)
     if not board:
-        db.add(BoardTable(**{'board': post.board_name,
-                             'url': f"https://www.ptt.cc/bbs/{post.board_name}/index.html"}))
+        board = BoardTable(board=post.board_name, url=f"https://www.ptt.cc/bbs/{post.board_name}/index.html")
+        db.add(board)
         db.commit()
+        db.refresh(board)
 
-
-    db.refresh(board)
-    db.refresh(author)
+    # db.refresh(board)
+    # db.refresh(author)
 
     db_post = PttPostsTable(
         title=post.title,
@@ -125,7 +132,8 @@ def create_post(post: PostCreate, db: Session = Depends(get_db)):
 
 
 # 刪除文章
-@app.delete("/api/posts/{id}")
+# @app.delete("/api/posts/{id}")
+@router.delete("/api/posts/{id}")
 def delete_post(id: int, db: Session = Depends(get_db)):
     post = db.query(PttPostsTable).filter(PttPostsTable.id == id).first()
     if post is None:
@@ -137,7 +145,8 @@ def delete_post(id: int, db: Session = Depends(get_db)):
 
 # 修改文章
 # todo : if author is exist/ not exist
-@app.put("/api/posts/{id}", response_model=PostResponse)
+# @app.put("/api/posts/{id}", response_model=PostResponse)
+@router.put("/api/posts/{id}", response_model=PostResponse)
 def update_post(id: int, post_update: PostUpdate, db: Session = Depends(get_db)):
     db_post = db.query(PttPostsTable).filter(PttPostsTable.id == id).first()
 

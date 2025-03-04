@@ -1,4 +1,4 @@
-from pydantic import BaseModel, HttpUrl, field_validator
+from pydantic import BaseModel, HttpUrl, field_validator, ConfigDict
 import re
 
 class PttPostModel(BaseModel):
@@ -15,16 +15,22 @@ class PttPostModel(BaseModel):
             raise ValueError('wrong date format')
         return value
 
+    class Config(ConfigDict):
+        from_attributes = True
+
+
 class AuthorBase(BaseModel):
     author_ptt_id: str
     author_nickname: str
-    class Config:
+
+    class Config(ConfigDict):
         from_attributes = True
 
 class BoardBase(BaseModel):
     board: str
     url: str
-    class Config:
+
+    class Config(ConfigDict):
         from_attributes = True
 
 class PostBase(BaseModel):
@@ -32,7 +38,8 @@ class PostBase(BaseModel):
     link: str
     date: str
     content: str
-    class Config:
+
+    class Config(ConfigDict):
         from_attributes = True
 
 class PostCreate(PostBase):
@@ -41,7 +48,7 @@ class PostCreate(PostBase):
     author_nickname: str
     title: str
     content: str
-    link: HttpUrl
+    link: str
     date: str
 
     @field_validator('date')
@@ -51,14 +58,15 @@ class PostCreate(PostBase):
             raise ValueError('wrong date format')
         return value
 
-    class Config:
+    class Config(ConfigDict):
         from_attributes = True
 
 class PostUpdate(PostBase):
     board_name: str
     author_ptt_id: str
     author_nickname: str
-    class Config:
+
+    class Config(ConfigDict):
         from_attributes = True
 
 class PostResponse(PostBase):
@@ -66,7 +74,7 @@ class PostResponse(PostBase):
     board_id: int
     author_id: int
     title: str
-    link: HttpUrl
+    link: str
     content: str
     date: str
 
@@ -77,5 +85,5 @@ class PostResponse(PostBase):
             raise ValueError('wrong date format')
         return value
 
-    class Config:
+    class Config(ConfigDict):
         from_attributes = True
